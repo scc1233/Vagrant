@@ -67,4 +67,26 @@ Vagrant.configure("2") do |config|
   #   apt-get update
   #   apt-get install -y apache2
   # SHELL
+  config.vm.define "client" do |client|
+    client.vm.hostname = "client"
+    client.vm.network "private_network", ip: "192.168.33.10"
+    client.vm.provision "shell", inline: <<-SHELL
+      sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+      sudo yum -y install ansible
+    SHELL
+  end
+  config.vm.define "server" do |server|
+    server.vm.hostname = "server"
+    server.vm.network "private_network", ip: "192.168.33.20"
+    server.vm.provision "shell", inline: <<-SHELL
+      sudo rpm -ivh https://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/epel-release-7-11.noarch.rpm
+      sudo yum -y install ansible
+    SHELL
+  end
+  config.vm.define "webserver" do |webserver|
+      webserver.vm.hostname = "webserver"
+      webserver.vm.provision "ansible" do |ansible|
+        ansible.playbook = "myplaybook.yml"
+    end
+  end
 end
